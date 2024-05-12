@@ -40,8 +40,9 @@ type TFnWithProperties = {
 };
 
 interface IFnWithProperties {
-  (x: number): number;
   prop: string;
+
+  (x: number): number;
 }
 
 // 이런 건 지양..굳이? 이렇게
@@ -66,14 +67,14 @@ interface IStateWithPop extends TState {
 
 type TStateWithPop = IState & { population: number };
 
-const a: TStateWithPop = {
-  // '{}' 형식은 'TStateWithPop' 형식에 할당할 수 없습니다.
-  // '{}' 형식에 'IState' 형식의 name, capital 속성이 없습니다.ts(2322)
-};
+// const a: TStateWithPop = {
+//   // '{}' 형식은 'TStateWithPop' 형식에 할당할 수 없습니다.
+//   // '{}' 형식에 'IState' 형식의 name, capital 속성이 없습니다.ts(2322)
+// };
 
-const b: IStateWithPop = {
-  // '{}' 형식에 'IStateWithPop' 형식의 population, name, capital 속성이 없습니다.ts(2739)
-};
+// const b: IStateWithPop = {
+//   // '{}' 형식에 'IStateWithPop' 형식의 population, name, capital 속성이 없습니다.ts(2739)
+// };
 
 // 인터페이스는 유니온 타입 같은 복잡한 타입을 확장하지는 못하고 타입과 &를 사용해야 한다.
 
