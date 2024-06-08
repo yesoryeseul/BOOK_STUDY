@@ -79,5 +79,43 @@ function pluck3<T>(records: T[], key: keyof T) {
   return records.map((r) => r[key]);
 }
 
-// function pluck3<T>(records: T[], key: keyof T): T[keyof T][]
-// T[keyof T]는 T 객체 내의 가능한 모든 값의 타입이다.
+/**
+ * function pluck3<T>(records: T[], key: keyof T): T[keyof T][]
+ * T[keyof T]는 T 객체 내의 가능한 모든 값의 타입이다.
+ * 그런데 key의 값으로 하나의 문자열을 넣게 되면, 그 범위가 너무 넓어서 적절한 타입이라고 보기 어렵다. 예를 들어 보자.
+ */
+
+const albums: Album2[] = [
+  {
+    artist: "aespa",
+    title: "supernova",
+    releaseDate: new Date("2024-05-14"),
+    recordingType: "studio",
+  },
+];
+
+const releaseDates = pluck3(albums, "releaseDate"); // 타입이 (string | Date)[]
+
+// releaseDates의 타입은 (string | Date)[]가 아니라 Date[]여야 한다. keyof T는 string에 비하면 훨씬 범위가 좁기는 하지만 그래도 여전히 넓다. ** 따라서, 범위를 더 좁히기 위해 keyof T의 부분 집합으로 두 번째 제너릭 매개변수를 도입해야 한다.
+
+function pluck4<T, K extends keyof T>(records: T[], key: K): T[K][] {
+  return records.map((r) => r[key]);
+}
+
+const _releaseDates = pluck4(albums, "releaseDate"); // 타입이 Date[]
+const _artist = pluck4(albums, "artist"); // 타입이 string[]
+const _recordingType = pluck4(albums, "recordingType"); // 타입이 RecordingType[]
+const _recordingDate = pluck4(albums, "recordingDate"); // "recordingDate"' 형식의 인수는 'keyof Album2' 형식의 매개 변수에 할당될 수 없습니다.ts(2345)
+
+/**
+ * 매개변수 타입이 정밀해진 덕분에 언어 서비스는 Album2의 키에 자동 완성 기능을 제공할 수 있게 해준다.
+ *
+ * string은 any와 비슷한 문제를 가지고 있다. 따라서 잘못 사용하게 되면 무효한 값을 허용하고 타입 간의 관계도 감추어 버린다. 이러한 문제점은 타입 체커를 방해하고 실제 버그를 찾지 못하게 만든다. 타입스크립트에서 string 부분 집합을 정의할 수 있는 기능은 자바스크립트 코드에 타입 안전성을 크게 높인다.
+ *
+ * 요약
+ * - '문자열을 남발하여 선언된' 코드를 피하자. 모든 문자열을 할당할 수 있는 string 타입보다는 더 구체적인 타입을 사용하는 것이 좋다.
+ *
+ * - 변수의 범위를 보다 정확하게 표현하고 싶다면 string 타입보다는 문자열 리터럴 타입의 유니온을 사용하면 된다.
+ *
+ * - 객체의 속성 이름을 함수 매개변수로 받을 때는 string보다 keyof T를 사용하는 것이 좋다.
+ */
