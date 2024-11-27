@@ -24,3 +24,106 @@ function average(ar: number) {
   assertNotEmpty(ar);
   return sum(ar) / size(ar);
 }
+
+/**
+ * 4.1.2 규칙 적용
+ * handleInput에서 if-else를 제거하는 첫 번째 단계는 Input을 열거형(enum)에서 인터페이스로 바꾸는 것
+ * 여기서 값들은 클래스로 바뀐다. 마지막으로, 값이 이제 객체가 되었기 때문에 if 구문 내의 코드를 각 클래스의 메서드로 옮길 수 있다.
+ */
+
+enum RawInput {
+  RIGHT,
+  LEFT,
+  UP,
+  DOWN,
+}
+
+interface Input2 {
+  isRight(): boolean;
+  isLeft(): boolean;
+  isUp(): boolean;
+  isDown(): boolean;
+}
+
+class Right implements Input2 {
+  isRight() {
+    return true;
+  }
+  isLeft() {
+    return false;
+  }
+  isUp() {
+    return false;
+  }
+  isDown() {
+    return false;
+  }
+}
+
+class Left implements Input2 {
+  isRight() {
+    return false;
+  }
+  isLeft() {
+    return true;
+  }
+  isUp() {
+    return false;
+  }
+  isDown() {
+    return false;
+  }
+}
+class Up implements Input2 {
+  isRight() {
+    return false;
+  }
+  isLeft() {
+    return false;
+  }
+  isUp() {
+    return true;
+  }
+  isDown() {
+    return false;
+  }
+}
+class Down implements Input2 {
+  isRight() {
+    return false;
+  }
+  isLeft() {
+    return false;
+  }
+  isUp() {
+    return false;
+  }
+  isDown() {
+    return true;
+  }
+}
+
+// 변경 전 handleInput
+function handleInput(input: Input) {
+  if (input === Input.LEFT) moveHorizontal(-1);
+  else if (input === Input.RIGHT) moveHorizontal(1);
+  else if (input === Input.UP) moveVertical(-1);
+  else if (input === Input.DOWN) moveVertical(1);
+}
+
+// 변경 후 handleInput
+function handleInput(input: Input2) {
+  // 인터페이스를 사용하도록 타입을 변경
+  if (input.isLeft()) moveHorizontal(-1);
+  else if (input.isRight()) moveHorizontal(1);
+  else if (input.isUp()) moveVertical(-1);
+  else if (input.isDown()) moveVertical(1);
+}
+
+// new 로 변경한 handleInput
+function handleInput(input: Input) {
+  if (input === new Left()) moveHorizontal(-1);
+  else if (input === new Right()) moveHorizontal(1);
+  else if (input === new Up()) moveVertical(-1);
+  else if (input === new Down()) moveVertical(1);
+}
