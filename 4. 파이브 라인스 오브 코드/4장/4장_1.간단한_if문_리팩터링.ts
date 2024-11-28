@@ -127,3 +127,93 @@ function handleInput(input: Input) {
   else if (input === new Up()) moveVertical(-1);
   else if (input === new Down()) moveVertical(1);
 }
+
+/**
+ * 4.1.3 리팩터링 패턴: 클래스 타입 코로 대체
+ */
+
+// 정해진 상수를 참조하지 않고 숫자를 사용했을 수 있기 때문에 int의 경우 타입 코드의 사용을 추적하는 것이 까다롭다. 따라서 타입 코드를 볼 때는 항상 즉시 열거형으로 변환한다. 그래야만 안전 적용 가능하다.
+const SMALL = 33;
+const MEDIUM = 37;
+const LARGE = 42;
+
+// 변경 후
+enum TShirtsSizes {
+  SMALL = 33,
+  MEDIUM = 37,
+  LARGE = 42,
+}
+
+// 초기 코드
+// enum TrafficLight {
+//   RED,
+//   YELLOW,
+//   GREEN,
+// }
+
+const CYCLE = [TrafficLight.RED, TrafficLight.GREEN, TrafficLight.YELLOW];
+function updateCarForLight(current: TrafficLight) {
+  if (current === TrafficLight.RED) car.stop();
+  else car.drive();
+}
+
+// 1. 임시 이름으로 새로운 인터페이스 도입
+// 6. 마지막으로 오류가 없다면 인터페이스 이름을 모든 위치에서 영구적 이름으로 변경 (TrafficLight ->  TrafficLight)
+interface TrafficLight {
+  isRed(): boolean;
+  isGreen(): boolean;
+  isYellow(): boolean;
+}
+
+// 2. 각 열거형에 대한 클래스 생성
+class Red implements TrafficLight {
+  isRed() {
+    return true;
+  }
+  isGreen() {
+    return false;
+  }
+  isYellow() {
+    return false;
+  }
+}
+
+class Green implements TrafficLight {
+  isRed() {
+    return false;
+  }
+  isGreen() {
+    return true;
+  }
+  isYellow() {
+    return false;
+  }
+}
+
+class Yellow implements TrafficLight {
+  isRed() {
+    return false;
+  }
+  isGreen() {
+    return false;
+  }
+  isYellow() {
+    return true;
+  }
+}
+
+// 3. 열거형 이름 변경
+enum RawTrafficLight {
+  RED,
+  YELLOW,
+  GREEN,
+}
+
+// 4. 타입을 이전 이름에서 임시 이름으로 변경하고 일치 여부 검사를 새로운 메서드로 대체
+function updateCarForLight(current: TrafficLight) {
+  if (current.isRed()) car.stop();
+  else car.drive();
+}
+
+// 5. 열거형 값에 대한 나머지 참조를 새 클래스를 인스턴스화해서 교체
+const _CYCLE = [new Red(), new Green(), new Yellow()];
