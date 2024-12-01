@@ -333,3 +333,35 @@ class Yellow implements TrafficLight {
 function updateCarForLight(current: TrafficLight) {
   current.updateCar();
 }
+
+/**
+ * 4.1.7 리팩터링 패턴: 메서드의 인라인화
+ * 해당 책에선 대부분 메서드가 한 줄만 있는 경우 인라인화 작업을 수행한다
+ */
+
+// 인라인화해서는 안되는 메서드
+const NUMBER_BITS = 32;
+function absolute(x: number) {
+  return (x ^ (x >> (NUMBER_BITS - 1))) - (x >> (NUMBER_BITS - 1));
+}
+
+// 인라인화 예제
+// 초기 코드
+function deposit(to: string, amount: number) {
+  let accountId = database.find(to);
+  database.updateOne(accountId, { $inc: { balance: amount } });
+}
+
+// 메서드를 잘못 호출하면 출금 없이 돈을 입금할 수도 있게 됨
+function transfer(from: string, to: string, amount: string) {
+  deposit(from, -amount);
+  deposit(to, amount);
+}
+
+// 변경 후, 이제 잘못 계산될 여지가 없다.
+function transfer(from: string, to: string, amount: number) {
+  let fromAccountId = database.find(from);
+  database.updateOne(fromAccountId, { $inc: { balance: -amount } });
+  let toAccountId = database.find(to);
+  database.updateOne(toAccountId, { $inc: { balance: amount } });
+}
