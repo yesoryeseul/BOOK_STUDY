@@ -253,3 +253,83 @@ class Down implements Input {
     moveVertical(-1);
   }
 }
+
+/**
+ * 4.1.5 리팩터링 패턴: 클래스로의 코드 이관
+ */
+
+// 기존 코드
+interface TrafficLight {
+  isRed(): boolean;
+  isGreen(): boolean;
+  isYellow(): boolean;
+}
+
+// 2. 각 열거형에 대한 클래스 생성
+class Red implements TrafficLight {
+  isRed() {
+    return true;
+  }
+  isGreen() {
+    return false;
+  }
+  isYellow() {
+    return false;
+  }
+}
+
+class Green implements TrafficLight {
+  isRed() {
+    return false;
+  }
+  isGreen() {
+    return true;
+  }
+  isYellow() {
+    return false;
+  }
+}
+
+class Yellow implements TrafficLight {
+  isRed() {
+    return false;
+  }
+  isGreen() {
+    return false;
+  }
+  isYellow() {
+    return true;
+  }
+}
+
+function updateCarForLight(current: TrafficLight) {
+  if (current === TrafficLight.RED) car.stop();
+  else car.drive();
+}
+
+// 변경 후
+interface TrafficLight {
+  updateCar(): void;
+}
+
+class Red implements TrafficLight {
+  updateCar() {
+    car.stop();
+  }
+}
+
+class Green implements TrafficLight {
+  updateCar() {
+    car.drive();
+  }
+}
+
+class Yellow implements TrafficLight {
+  updateCar() {
+    car.drive();
+  }
+}
+
+function updateCarForLight(current: TrafficLight) {
+  current.updateCar();
+}
