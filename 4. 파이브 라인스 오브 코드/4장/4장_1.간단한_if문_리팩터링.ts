@@ -217,3 +217,39 @@ function updateCarForLight(current: TrafficLight) {
 
 // 5. 열거형 값에 대한 나머지 참조를 새 클래스를 인스턴스화해서 교체
 const _CYCLE = [new Red(), new Green(), new Yellow()];
+
+/**
+ * 4.1.4 클래스 코드로 이관하기
+ *
+ * handleInput의 모든 조건은 매개변수 input과 관련 있으며, 이는 코드가 해당 클래스에 있어야 함을 의미한다.
+ */
+
+// 변경 후
+interface Input {
+  handle(): void;
+}
+
+function handleInput(input: Input) {
+  input.handle();
+}
+class Left implements Input {
+  handle() {
+    moveHorizontal(-1);
+  }
+}
+class Right implements Input {
+  handle() {
+    moveHorizontal(1);
+  }
+}
+class Up implements Input {
+  handle() {
+    moveVertical(1);
+  }
+}
+
+class Down implements Input {
+  handle() {
+    moveVertical(-1);
+  }
+}
